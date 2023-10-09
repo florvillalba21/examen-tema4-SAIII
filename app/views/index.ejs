@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Images</title>
+  </head>
+  <body>
+    <h1>Esta aplicacion devuelve una lista de fotografias de perros en base a una raza</h1>
+    <h2>Por ejemplo: en el buscador ingrese "hound"</h2>
+
+    <!-- Formulario de búsqueda -->
+    <form id="search-form">
+      <label for="breed">Ingresa una raza de perro:</label>
+      <input type="text" id="breed" name="breed" />
+      <button type="submit">Buscar</button>
+    </form>
+
+    <h3>Resultado</h3>
+    <ul id="image-list">
+      <!-- Las imágenes se mostrarán aquí -->
+      <% images.forEach(image => { %>
+      <li><img src="<%= image %>" alt="Perro" /></li>
+      <% }); %>
+    </ul>
+
+    <script>
+      document
+        .getElementById("search-form")
+        .addEventListener("submit", function (event) {
+          const breed = document.getElementById("breed").value;
+          console.log(breed);
+          event.preventDefault();
+          fetch(`http://localhost:3000/${breed}`)
+            .then((response) => {
+              if (
+                response.ok &&
+                response.headers
+                  .get("content-type")
+                  .includes("application/json")
+              ) {
+                return response.json(); // Parsea la respuesta como JSON
+              }
+              throw new Error("La respuesta del servidor no es válida");
+            })
+            .then((data) => {
+              // Actualiza la lista de imágenes con las nuevas imágenes
+              const imageList = document.getElementById("image-list");
+              imageList.innerHTML = data.images
+                .map((image) => `<li><img src="${image}" alt="Perro"></li>`)
+                .join("");
+            })
+            .catch((error) => {
+              // Maneja el error, por ejemplo, mostrando un mensaje en la interfaz de usuario
+              console.error(error);
+              const imageList = document.getElementById("image-list");
+              imageList.innerHTML =
+                "<li>Error al obtener las imágenes del servidor</li>";
+            });
+        });
+    </script>
+  </body>
+</html>

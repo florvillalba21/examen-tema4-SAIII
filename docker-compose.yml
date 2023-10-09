@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  examen:
+    image: dockerfile-examen-app
+    volumes:
+      - /volumes
+    ports:
+      - "3000:3000"
+    networks:
+      - mynetwork-swarm
+    deploy:
+      replicas: 5  
+
+networks:
+  mynetwork-swarm:
